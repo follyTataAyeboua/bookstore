@@ -3,6 +3,9 @@ package com.manulife.codingtest.bookstore.security.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.manulife.codingtest.bookstore.config.web.Properties;
 import com.manulife.codingtest.bookstore.security.service.UserDetailsServiceImpl;
+import com.manulife.codingtest.bookstore.store.service.BookService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -21,6 +24,8 @@ import java.util.Map;
 
 
 public class AuthTokenFilter extends OncePerRequestFilter {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -51,7 +56,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
         } catch (Exception e) {
-//            log.error("Cannot set user authentication:", e);
+            logger.error("Cannot set user authentication:", e);
             response.setHeader("ERROR", e.getMessage());
             response.sendError(HttpServletResponse.SC_FORBIDDEN);
 

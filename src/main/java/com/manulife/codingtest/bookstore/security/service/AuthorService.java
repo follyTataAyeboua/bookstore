@@ -16,7 +16,10 @@ import com.manulife.codingtest.bookstore.security.payload.response.JwtResponse;
 import com.manulife.codingtest.bookstore.security.repository.AuthorRepository;
 import com.manulife.codingtest.bookstore.security.repository.RoleRepository;
 import com.manulife.codingtest.bookstore.security.utils.Constants;
+import com.manulife.codingtest.bookstore.store.controller.BookController;
 import org.mapstruct.factory.Mappers;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -38,6 +41,8 @@ import java.util.stream.Collectors;
 @Service
 @Transactional
 public class AuthorService {
+
+    private static final Logger logger = LoggerFactory.getLogger(BookController.class);
 
     @Autowired
     AuthenticationManager authenticationManager;
@@ -65,12 +70,13 @@ public class AuthorService {
     private static final String ADMIN = "ADMIN";
 
     public Author getAuthor(String username) {
+        logger.info("getAuthor user {}", username);
         return authorRepository.findByUsername(username)
                 .orElseThrow(() -> new RuntimeException("Not Author found for provided username: " + username));
     }
 
     public JwtResponse authenticateUser(LoginRequest loginRequest) {
-//        log.info("Authenticating user {}", loginRequest.getUsername());
+        logger.info("Authenticating user {}", loginRequest.getUsername());
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
@@ -87,7 +93,7 @@ public class AuthorService {
     }
 
     public MessageResponse registerUser(@Valid @RequestBody SignUpRequest signUpRequest) {
-//        log.info("Register user {}", signUpRequest.getUsername());
+        logger.info("Register user {}", signUpRequest.getUsername());
         Author author = new Author(signUpRequest.getUsername(), signUpRequest.getFirstname(), signUpRequest.getLastname(),
                 signUpRequest.getEmail(), encoder.encode(signUpRequest.getPassword()));
 
@@ -146,7 +152,7 @@ public class AuthorService {
                 throw new Exception("Refresh token missing");
             }
         } catch (Exception e) {
-//            log.error("Cannot refresh user token {}", e.getMessage());
+            logger.error("Cannot refresh user token", e);
             throw new RuntimeException("Cannot refresh user token: " + e.getMessage());
         }
     }
@@ -158,8 +164,6 @@ public class AuthorService {
                 String jwt = headerAuth.substring(7, headerAuth.length());
                 if (jwtUtils.validateJwtToken(jwt)) {
                     return properties.getUseDefaultToken() ? requestUsername : jwtUtils.getUserNameFromJwtToken(jwt);
-                    /*return authorRepository.findByUsername(username)
-                            .orElseThrow(() -> new RuntimeException("No user found with the provided username " + username));*/
                 } else {
                     throw new Exception("Refresh token expired or not valid");
                 }
@@ -167,7 +171,7 @@ public class AuthorService {
                 throw new Exception("Refresh token missing");
             }
         } catch (Exception e) {
-//            log.error("Cannot refresh user token {}", e.getMessage());
+            logger.error("Cannot refresh user token", e);
             throw new RuntimeException("Cannot get user from token : " + e.getMessage());
         }
     }
