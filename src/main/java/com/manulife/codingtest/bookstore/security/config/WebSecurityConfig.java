@@ -28,7 +28,6 @@ public class WebSecurityConfig {
             "/v3/api-docs/**",
             "/swagger-ui/**",
 
-            "/api/test/**",
             "/api/auth/**",
             "/api/book/books**",
             "/api/book/books/criteria**",

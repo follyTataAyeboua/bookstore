@@ -17,6 +17,7 @@ import com.manulife.codingtest.bookstore.security.repository.AuthorRepository;
 import com.manulife.codingtest.bookstore.security.repository.RoleRepository;
 import com.manulife.codingtest.bookstore.security.utils.Constants;
 import com.manulife.codingtest.bookstore.store.controller.BookController;
+import org.apache.commons.lang3.StringUtils;
 import org.mapstruct.factory.Mappers;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +30,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.validation.Valid;
@@ -134,7 +134,7 @@ public class AuthorService {
 
     public JwtResponse refreshToken(String headerAuth, String requestUsername) {
         try {
-            if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(Constants.BEARER)) {
+            if (StringUtils.isNotEmpty(headerAuth) && headerAuth.startsWith(Constants.BEARER)) {
                 String jwt = headerAuth.substring(7, headerAuth.length());
                 if (jwtUtils.validateJwtToken(jwt)) {
                     String username = properties.getUseDefaultToken() ? requestUsername : jwtUtils.getUserNameFromJwtToken(jwt);
@@ -160,7 +160,7 @@ public class AuthorService {
     public String getUsernameFromHeader(String headerAuth, String requestUsername) {
 
         try {
-            if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(Constants.BEARER)) {
+            if (StringUtils.isNotEmpty(headerAuth) && headerAuth.startsWith(Constants.BEARER)) {
                 String jwt = headerAuth.substring(7, headerAuth.length());
                 if (jwtUtils.validateJwtToken(jwt)) {
                     return properties.getUseDefaultToken() ? requestUsername : jwtUtils.getUserNameFromJwtToken(jwt);
