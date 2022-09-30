@@ -24,7 +24,6 @@ public class BookDto {
     private AuthorDto authorDto;
 
     @DecimalMin(value = "0.0", inclusive = false)
-    @Digits(integer = 3, fraction = 2)
     private BigDecimal price;
 
     public BookDto() {
