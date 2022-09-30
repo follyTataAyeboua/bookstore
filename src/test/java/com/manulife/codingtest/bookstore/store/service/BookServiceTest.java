@@ -11,6 +11,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
@@ -81,8 +82,8 @@ public class BookServiceTest {
         Mockito.when(bookRepository.save(Mockito.any())).thenReturn(dtoSaved);
 
 
-        bookService.bookRepository = bookRepository;
-        bookService.authorService = authorService;
+        ReflectionTestUtils.setField(bookService, "bookRepository", bookRepository);
+        ReflectionTestUtils.setField(bookService, "authorService", authorService);
 
     }
 
