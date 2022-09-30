@@ -7,30 +7,27 @@ CREATE TABLE author_roles
 
 CREATE TABLE authors
 (
-    id        BIGINT AUTO_INCREMENT NOT NULL,
+    id        SERIAL PRIMARY KEY,
     username  VARCHAR(255) NULL,
     firstname VARCHAR(255) NULL,
     lastname  VARCHAR(255) NULL,
     email     VARCHAR(255) NULL,
-    password  VARCHAR(255) NULL,
-    CONSTRAINT pk_authors PRIMARY KEY (id)
+    password  VARCHAR(255) NULL
 );
 
 CREATE TABLE books
 (
-    id            BIGINT AUTO_INCREMENT NOT NULL,
+    id            SERIAL PRIMARY KEY,
     title         VARCHAR(255) NULL,
     description   TEXT NULL,
     author_id     BIGINT NOT NULL,
-    price         DECIMAL(38,22) NULL,
-    CONSTRAINT pk_books PRIMARY KEY (id)
+    price         DECIMAL(38,22) NULL
 );
 
 CREATE TABLE roles
 (
-    id   BIGINT AUTO_INCREMENT NOT NULL,
-    name VARCHAR(20) NULL,
-    CONSTRAINT pk_roles PRIMARY KEY (id)
+    id   SERIAL PRIMARY KEY,
+    name VARCHAR(20) NULL
 );
 
 ALTER TABLE books
