@@ -90,12 +90,12 @@ public class BookController {
             List<Predicate<Book>> predicates = new ArrayList<>();
 
             if (StringUtils.isNotEmpty(title)) {
-                Predicate<Book> titlePredicate = (x) -> StringUtils.contains(x.getTitle(), title);
+                Predicate<Book> titlePredicate = (x) -> StringUtils.containsIgnoreCase(x.getTitle(), title);
                 predicates.add(titlePredicate);
             }
 
             if (StringUtils.isNotEmpty(author)) {
-                Predicate<Book> authorPredicate = (x) -> StringUtils.contains(x.getAuthor().getFirstname(), author)
+                Predicate<Book> authorPredicate = (x) -> StringUtils.containsIgnoreCase(x.getAuthor().getFirstname(), author)
                         || StringUtils.contains(x.getAuthor().getLastname(), author);
                 predicates.add(authorPredicate);
             }

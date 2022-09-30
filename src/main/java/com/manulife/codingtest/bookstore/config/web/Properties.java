@@ -1,9 +1,9 @@
 package com.manulife.codingtest.bookstore.config.web;
 
 import com.manulife.codingtest.bookstore.security.utils.Constants;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -91,7 +91,7 @@ public class Properties {
     public String parseJwt(HttpServletRequest request) {
         String headerAuth = getAuthorizationHeader(request);
 
-        if (StringUtils.hasText(headerAuth) && headerAuth.startsWith(Constants.BEARER)) {
+        if (StringUtils.isNotEmpty(headerAuth) && headerAuth.startsWith(Constants.BEARER)) {
             return headerAuth.substring(7, headerAuth.length());
         }
 
@@ -100,7 +100,7 @@ public class Properties {
 
     public String parseUsernameHeader(HttpServletRequest request) {
         String headerUsername = request.getHeader(usernameHeader);
-        return StringUtils.hasText(headerUsername) ? headerUsername : null;
+        return StringUtils.isNotEmpty(headerUsername) ? headerUsername : null;
     }
 
     public String getAuthorizationHeader(HttpServletRequest request) {
