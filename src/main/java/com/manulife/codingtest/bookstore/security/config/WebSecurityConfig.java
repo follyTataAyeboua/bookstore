@@ -30,7 +30,8 @@ public class WebSecurityConfig {
 
             "/api/test/**",
             "/api/auth/**",
-            "/api/book/books**",
+            "/api/book/books",
+            "/api/book/books/criteria",
             "/api/book/count"
     };
 

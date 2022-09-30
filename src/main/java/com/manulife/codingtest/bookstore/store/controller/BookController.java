@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.math.BigDecimal;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Predicate;
 
@@ -69,11 +69,23 @@ public class BookController {
                                               @RequestParam(value = "pricemax", defaultValue = "0") BigDecimal priceMax) {
         try {
 
-            Predicate<Book> titlePredicate = (x) -> StringUtils.contains(x.getTitle(), title);
-            Predicate<Book> priceMinPredicate = (x) -> priceMin.compareTo(x.getPrice()) <= 0;
-            Predicate<Book> priceMaxPredicate = (x) -> priceMax.compareTo(x.getPrice()) >= 0;
+            List<Predicate<Book>> predicates = new ArrayList<>();
 
-            List<Predicate<Book>> predicates = Arrays.asList(titlePredicate, priceMinPredicate, priceMaxPredicate);
+            if (StringUtils.isNotEmpty(title)) {
+                Predicate<Book> titlePredicate = (x) -> StringUtils.contains(x.getTitle(), title);
+                predicates.add(titlePredicate);
+            }
+
+            if (priceMin.compareTo(BigDecimal.ZERO) != 1) {
+                Predicate<Book> priceMinPredicate = (x) -> priceMin.compareTo(x.getPrice()) <= 0;
+                predicates.add(priceMinPredicate);
+            }
+
+            if (BigDecimal.ZERO.compareTo(priceMax) != 1) {
+                Predicate<Book> priceMaxPredicate = (x) -> priceMax.compareTo(x.getPrice()) >= 0;
+                predicates.add(priceMaxPredicate);
+            }
+
             List<BookDto> books = bookService.getAllByTitleCriteria(predicates);
 
             return ResponseEntity.ok(books);
