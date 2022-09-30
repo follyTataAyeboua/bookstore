@@ -4,32 +4,23 @@ import com.manulife.codingtest.bookstore.config.payload.MessageResponse;
 import com.manulife.codingtest.bookstore.config.payload.ResponseType;
 import com.manulife.codingtest.bookstore.config.web.Properties;
 import com.manulife.codingtest.bookstore.security.service.AuthorService;
+import com.manulife.codingtest.bookstore.store.domain.Book;
 import com.manulife.codingtest.bookstore.store.payload.BookDto;
 import com.manulife.codingtest.bookstore.store.service.BookService;
 import io.swagger.v3.oas.annotations.Operation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.function.Predicate;
 
 @CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
 @RestController
@@ -69,22 +60,27 @@ public class BookController {
         }
     }
 
-    /*@Operation(summary = "Book list")
+    @Operation(summary = "Book list by criteria")
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/books/criteria")
     public ResponseEntity<?> getAllByCriteria(@RequestParam(value = "title", defaultValue = "") String title,
-                                              @RequestParam(value = "description", defaultValue = "") String description,
                                               @RequestParam(value = "author", defaultValue = "") String author,
                                               @RequestParam(value = "pricemin", defaultValue = "0") BigDecimal priceMin,
                                               @RequestParam(value = "pricemax", defaultValue = "0") BigDecimal priceMax) {
         try {
-            List<BookDto> books = bookService.getAll(page, size);
+
+            Predicate<Book> titlePredicate = (x) -> StringUtils.contains(x.getTitle(), title);
+            Predicate<Book> priceMinPredicate = (x) -> priceMin.compareTo(x.getPrice()) <= 0;
+            Predicate<Book> priceMaxPredicate = (x) -> priceMax.compareTo(x.getPrice()) >= 0;
+
+            List<Predicate<Book>> predicates = Arrays.asList(titlePredicate, priceMinPredicate, priceMaxPredicate);
+            List<BookDto> books = bookService.getAllByTitleCriteria(predicates);
 
             return ResponseEntity.ok(books);
         } catch (Exception ex) {
             return ResponseEntity.badRequest().body(new MessageResponse(ResponseType.ERROR, ex.getMessage()));
         }
-    }*/
+    }
 
     @Operation(summary = "Create Book")
     @ResponseStatus(HttpStatus.OK)

@@ -15,8 +15,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Service
 @Transactional
@@ -27,6 +31,9 @@ public class BookService {
 
     @Autowired
     AuthorService authorService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     private final BookMapper bookMapper = Mappers.getMapper(BookMapper.class);
 
@@ -44,6 +51,17 @@ public class BookService {
             Pageable sortedByTitle = PageRequest.of(min, max, Sort.by("title"));
             return bookRepository.findAll(sortedByTitle).stream().map(bookMapper::bookToBookDto).collect(Collectors.toList());
         }
+    }
+
+    public List<BookDto> getAllByTitleCriteria(List<Predicate<Book>> predicates) {
+        List<Book> books = entityManager.createQuery("select b from Book b", Book.class).getResultList();
+        Stream<Book> stream = books.stream();
+        for (Predicate<Book> predicate : predicates) {
+            stream = stream.filter(predicate);
+        }
+        return stream.map(bookMapper::bookToBookDto).collect(Collectors.toList());
+
+
     }
 
     public BookDto createBook(BookDto bookDto, String username) {
